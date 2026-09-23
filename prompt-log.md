@@ -163,3 +163,18 @@ Test Files 2 passed (2) | Tests 3 passed (3)
 - ตามคำตอบข้อ 2 ของทีม: ค่าเริ่มต้นปฏิเสธทุก request (ยังไม่มีการเชื่อมระบบยืนยันตัวตนจริง) และมีตัวตรวจจำลองเปิดด้วย `AUTH_MODE=dev` ที่ถือว่าเป็นผู้ใช้ `dev-user`
 - สิ่งที่เกือบต้องเดาแต่ไม่ได้เดา: รูปแบบที่หน้าจอส่งผลยืนยันตัวตน (header, token) ไม่มีใน spec/plan จึงไม่ได้สร้าง ตัวตรวจจริงยังรอข้อสังเกต 5
 - สถานะ: T-02 เปลี่ยนเป็น "เสร็จ" (ทีมอนุมัติให้ถือว่าเสร็จหลัง commit ตามคำตอบข้อ 4) T-03 เป็น "เสร็จ รอทีมตรวจ"
+
+---
+
+## 2569-09-23 คำสั่ง: /implement T-04
+
+- เครื่องมือ: Claude Code (VS Code ใน Codespaces)
+- task: T-04 สร้าง GET /slots แสดงช่วงว่าง 30 วันตามแพ็กเกจ (รองรับ FR-BKG-01, FR-BKG-06)
+- ไฟล์ที่สร้างหรือแก้ (ตรงกับช่อง "ไฟล์ที่แตะ"): สร้าง `backend/app/slots/router.py`, `backend/app/slots/service.py`, `backend/tests/test_FR_BKG_01_06_slots.py` แก้ `backend/app/main.py` (รวม router)
+- ผล test (`cd backend && pytest -v`): 17 passed (ของ T-04 4 ตัว: test_FR_BKG_01_slots_within_30_days_with_remaining, test_FR_BKG_01_full_slot_not_returned, test_FR_BKG_06_slots_by_package, test_IF_IDP_01_slots_requires_identity) มี warning 1 ตัวจาก library เหมือนเดิม
+- ใช้คำตอบของทีม: ขอบเขต date_from ถึง date_from+29 และไม่คืนช่วงที่ remaining เป็น 0
+- สิ่งที่เกือบต้องเดาแต่ไม่ได้เดา:
+  - ไม่ได้บังคับว่า date_from ต้องไม่ก่อนวันนี้ เพราะ spec/plan ไม่ได้บอก หน้าจอเป็นคนส่ง "วันนี้" ตาม Asia/Bangkok (ASM-02)
+  - `start_time` ส่งออกเป็นรูปแบบมาตรฐาน `09:00:00` ไม่ได้ตัดให้เหลือ `09:00` เพราะไม่มีข้อกำหนดเรื่องรูปแบบการแสดงเวลา
+  - ไม่ได้ส่ง `capacity` ออกไป เพราะ plan ข้อ 4 ระบุแค่ "รายการช่วงเวลา + ที่นั่งคงเหลือ"
+- สถานะ: T-03 เปลี่ยนเป็น "เสร็จ" (อนุมัติหลัง commit ตามคำตอบข้อ 4) T-04 เป็น "เสร็จ รอทีมตรวจ"

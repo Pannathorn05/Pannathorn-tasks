@@ -32,7 +32,7 @@ Feature: จองคิวตรวจสุขภาพ (Booking) | Spec ID: S
 - ไฟล์ที่แตะ: `backend/app/auth/idp.py`, `backend/tests/conftest.py`, `backend/tests/test_IF_IDP_01.py`
 - ต้องทำหลัง: T-01
 - เสร็จเมื่อ: test ยืนยันว่า request ที่ไม่มีผลยืนยันตัวตนถูกปฏิเสธ ส่วน request ที่มีผลยืนยันตัวตนผ่าน (ใช้ตัวตรวจจำลองใน test เพราะ spec และ plan ยังไม่ระบุวิธีเชื่อมระบบยืนยันตัวตนจริง ดูข้อสังเกต 5)
-- สถานะ: เสร็จ รอทีมตรวจ
+- สถานะ: เสร็จ
 
 ## หลังบ้าน: ช่วงเวลาและการจอง
 
@@ -42,7 +42,7 @@ Feature: จองคิวตรวจสุขภาพ (Booking) | Spec ID: S
 - ไฟล์ที่แตะ: `backend/app/slots/router.py`, `backend/app/slots/service.py`, `backend/app/main.py`, `backend/tests/test_FR_BKG_01_06_slots.py`
 - ต้องทำหลัง: T-02, T-03
 - เสร็จเมื่อ: test ยืนยันว่า GET /slots คืนเฉพาะช่วงภายใน 30 วันข้างหน้าพร้อม remaining และเมื่อเปลี่ยน `package_code` ได้ช่วงของแพ็กเกจนั้น
-- สถานะ: พร้อมทำ
+- สถานะ: เสร็จ รอทีมตรวจ
 
 ### T-05 สร้าง POST /bookings: บันทึกการจองและตัดที่นั่ง
 - รองรับ: FR-BKG-04
