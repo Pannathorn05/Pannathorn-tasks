@@ -82,3 +82,38 @@ tests/test_T01_setup.py::test_T01_app_created PASSED
 - แก้อะไร: ใส่ `backend/tests/test_T01_setup.py` กลับเข้าช่อง "ไฟล์ที่แตะ" ของ T-01 (หลัง "แก้ tasks.md รอบที่ 1" ช่องนี้ถูกย้อนกลับเป็นแบบเดิม 1 ครั้ง)
 - เพราะอะไร: checklist ข้อ 1 พบว่าไฟล์ test ยังอยู่จริงแต่ไม่อยู่ในช่อง "ไฟล์ที่แตะ" ทีมเลือกใส่กลับแทนการลบไฟล์ เพราะ (1) T-01 ต้องมี test ยืนยัน "เสร็จเมื่อ" (2) ให้ตรงกับบันทึกรอบที่ 1 (3) เป็นรูปแบบเดียวกับ T-02, T-11, T-14 ที่มีไฟล์ test อยู่ในช่องแล้ว
 - ไม่ได้แก้ task อื่น
+
+---
+
+## 2569-09-23 คำสั่ง: /implement T-17
+
+- เครื่องมือ: Claude Code (VS Code ใน Codespaces)
+- คำสั่ง: `/implement T-17 specs/001-booking/tasks.md` (ขั้นเสริม: task หน้าจอ React + Tailwind)
+- task: T-17 สร้างหน้าเลือกแพ็กเกจและช่วงเวลา (SlotPicker) รองรับ FR-BKG-01, FR-BKG-06
+
+### ไฟล์ที่สร้างหรือแก้ (ตรงกับช่อง "ไฟล์ที่แตะ")
+
+- สร้าง `frontend/src/pages/SlotPicker.jsx`
+- สร้าง `frontend/src/__tests__/FR-BKG-06.test.jsx`
+- แก้ `frontend/src/App.jsx` ให้แสดง SlotPicker ด้วย client จำลอง (ข้อมูล DEMO-A, DEMO-B ไม่ได้มาจาก spec)
+- แก้ `specs/001-booking/tasks.md` เปลี่ยนสถานะ T-17 เป็น "เสร็จ รอทีมตรวจ"
+
+### ผล test (`cd frontend && npx vitest run --reporter=verbose`)
+
+```
+✓ FR-BKG-06.test.jsx > FR-BKG-01 แสดงช่วงเวลาพร้อมที่นั่งคงเหลือ
+✓ FR-BKG-06.test.jsx > FR-BKG-06 เปลี่ยนแพ็กเกจแล้วโหลดช่วงเวลาใหม่
+✓ setup.test.jsx > โครงหน้าจอเปิดได้
+Test Files 2 passed (2) | Tests 3 passed (3)
+```
+
+- `setup.test.jsx` (test เดิมของโครงรายวิชา) ขึ้น warning `act(...)` เพราะตอนนี้ App โหลดช่วงเวลาแบบ async แต่ยังผ่าน ไม่ได้แก้เพราะไฟล์นี้ไม่อยู่ในช่อง "ไฟล์ที่แตะ"
+- `npm run build` ผ่าน (ลบโฟลเดอร์ `dist/` ทิ้งหลัง build เพราะ .gitignore ไม่ได้กันไว้)
+
+### สิ่งที่ AI เกือบต้องเดาแต่ไม่ได้เดา
+
+- รายการแพ็กเกจ: plan ไม่มี API จึงรับเป็น props ตามข้อสังเกต 7 ใน tasks.md และแสดงเป็นรหัสแพ็กเกจอย่างเดียว ไม่ได้ตั้งชื่อหรือรายละเอียดแพ็กเกจเอง
+- ชื่อฟิลด์ของ GET /slots: plan ข้อ 4 บอกแค่ "รายการช่วงเวลา + ที่นั่งคงเหลือ" จึงใช้ชื่อฟิลด์ตามตาราง slots ใน plan ข้อ 3 (`id`, `slot_date`, `start_time`, `package_code`, `remaining`) ทีมควรยืนยันตอนทำ T-04
+- `date_from`: ใช้ "วันนี้" ตามเขตเวลา Asia/Bangkok (ASM-02) รูปแบบ YYYY-MM-DD
+- ไม่ได้กรองหรือปิดปุ่มช่วงที่ remaining เป็น 0 เพราะ spec ไม่ได้บอก หน้าจอแสดงตามที่ API ส่งมา
+- ปุ่มเลือกช่วงเวลาเรียก `onSelectSlot` อย่างเดียว ยังไม่ได้ทำหน้ายืนยัน เพราะเป็นงานของ T-18
