@@ -31,3 +31,54 @@
 ### คำตอบของทีม
 
 - (ยังไม่ได้ตอบ)
+
+---
+
+## 2569-09-23 คำสั่ง: /implement T-01
+
+- เครื่องมือ: Claude Code (VS Code ใน Codespaces)
+- คำสั่ง: `/implement T-01 specs/001-booking/tasks.md`
+- task: T-01 ตั้งโครง FastAPI app, config และ session ฐานข้อมูล (รองรับ CON-TECH-01)
+
+### ไฟล์ที่สร้างหรือแก้
+
+- สร้าง `backend/app/main.py`, `backend/app/config.py`, `backend/app/db/session.py`, `backend/tests/conftest.py` (ตรงกับช่อง "ไฟล์ที่แตะ")
+- สร้าง `backend/tests/test_T01_setup.py` เพิ่ม (ไม่อยู่ในช่อง "ไฟล์ที่แตะ" AI ถามก่อน และทีมอนุญาต)
+- แก้ `specs/001-booking/tasks.md` เปลี่ยนสถานะ T-01 เป็น "เสร็จ รอทีมตรวจ"
+
+### ผล test (`cd backend && pytest -v`)
+
+```
+tests/test_T01_setup.py::test_T01_config_reads_database_url PASSED
+tests/test_T01_setup.py::test_T01_config_requires_database_url PASSED
+tests/test_T01_setup.py::test_T01_db_session_is_sqlite_in_memory PASSED
+tests/test_T01_setup.py::test_T01_app_created PASSED
+4 passed in 0.05s
+```
+
+### คำถามที่ AI ถาม และคำตอบของทีม
+
+1. ช่อง "ไฟล์ที่แตะ" ของ T-01 ไม่มีไฟล์ test แต่คำสั่ง /implement ให้เขียน test ยืนยัน "เสร็จเมื่อ" -> ทีมตอบให้เพิ่ม `backend/tests/test_T01_setup.py`
+
+### สิ่งที่ AI เกือบต้องเดาแต่ไม่ได้เดา
+
+- ค่าเริ่มต้นของ `DATABASE_URL`: spec และ plan ไม่ได้กำหนด จึงไม่ได้ตั้งค่าเริ่มต้นไว้ ถ้าไม่ได้ตั้งตัวแปรนี้ `get_database_url()` จะแจ้ง error แทนการเดาค่าเอง
+
+---
+
+## 2569-09-23 แก้งาน T-01 รอบที่ 2 (ตรวจ checklist 5 ข้อ)
+
+- เครื่องมือ: Claude Code (VS Code ใน Codespaces)
+- แก้อะไร: เพิ่มคอมเมนต์อ้าง ID 1 บรรทัดเหนือ fixture `engine` และ `db_session` ใน `backend/tests/conftest.py` และเหนือ `test_T01_config_requires_database_url` กับ `test_T01_app_created` ใน `backend/tests/test_T01_setup.py` ไม่ได้แก้ตัวโค้ด
+- เพราะอะไร: checklist ข้อ 5 พบว่า 4 ฟังก์ชันนี้ยังไม่มีคอมเมนต์อ้าง FR/CON ผิดกติกาข้อ 7 ใน AGENTS.md
+- ผล test หลังแก้: 4 passed
+
+---
+
+## 2569-09-23 แก้ tasks.md รอบที่ 3 (ใส่ไฟล์ test ของ T-01 กลับ)
+
+- เครื่องมือ: Claude Code (VS Code ใน Codespaces)
+- ไฟล์: specs/001-booking/tasks.md
+- แก้อะไร: ใส่ `backend/tests/test_T01_setup.py` กลับเข้าช่อง "ไฟล์ที่แตะ" ของ T-01 (หลัง "แก้ tasks.md รอบที่ 1" ช่องนี้ถูกย้อนกลับเป็นแบบเดิม 1 ครั้ง)
+- เพราะอะไร: checklist ข้อ 1 พบว่าไฟล์ test ยังอยู่จริงแต่ไม่อยู่ในช่อง "ไฟล์ที่แตะ" ทีมเลือกใส่กลับแทนการลบไฟล์ เพราะ (1) T-01 ต้องมี test ยืนยัน "เสร็จเมื่อ" (2) ให้ตรงกับบันทึกรอบที่ 1 (3) เป็นรูปแบบเดียวกับ T-02, T-11, T-14 ที่มีไฟล์ test อยู่ในช่องแล้ว
+- ไม่ได้แก้ task อื่น

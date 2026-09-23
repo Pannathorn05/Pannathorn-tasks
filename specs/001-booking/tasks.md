@@ -13,10 +13,10 @@ Feature: จองคิวตรวจสุขภาพ (Booking) | Spec ID: S
 ### T-01 ตั้งโครง FastAPI app, config และ session ฐานข้อมูล
 - รองรับ: CON-TECH-01
 - ตรวจด้วย: ไม่มี AC ตรง ๆ เป็นงานพื้นฐานของ T-02
-- ไฟล์ที่แตะ: `backend/app/main.py`, `backend/app/config.py`, `backend/app/db/session.py`, `backend/tests/conftest.py`
+- ไฟล์ที่แตะ: `backend/app/main.py`, `backend/app/config.py`, `backend/app/db/session.py`, `backend/tests/conftest.py`, `backend/tests/test_T01_setup.py`
 - ต้องทำหลัง: ไม่มี
 - เสร็จเมื่อ: `cd backend && pytest` รันได้โดย conftest สร้าง session SQLite ในหน่วยความจำ และ app อ่าน `DATABASE_URL` จาก config ได้
-- สถานะ: พร้อมทำ
+- สถานะ: เสร็จ รอทีมตรวจ
 
 ### T-02 สร้างตาราง slots, bookings, audit_logs และ migration 001_init
 - รองรับ: CON-TECH-01, DOM-PDPA-01, IF-HIS-01, FR-BKG-04
