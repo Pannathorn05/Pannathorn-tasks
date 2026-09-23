@@ -193,3 +193,22 @@ Test Files 2 passed (2) | Tests 3 passed (3)
   - สถานะ T-04 เปลี่ยนเป็น "เสร็จ" (อนุมัติหลัง commit ตามคำตอบข้อ 4)
 - เพราะอะไร: T-21 เดิมใหญ่เกินกว่าจะเสร็จใน 1 ถึง 2 ชั่วโมง ผิดกฎการแตกงานข้อ 1 ของ /tasks และต้องรอหลังบ้านหลายตัวที่ยังติดข้อสังเกต 1 และ 2 ทีมเลือกให้ T-21 แคบลงและสร้าง T-22 ใหม่ (คำตอบข้อ 3) T-21 ใหม่แตะไฟล์ทั้งหน้าจอและหลังบ้าน (seed.py, .gitignore) เพราะต้องมีข้อมูลตัวอย่าง ไม่อย่างนั้นหน้าจอจะไม่มีอะไรให้ดู
 - ตารางตรวจความครบไม่เปลี่ยน (T-21 และ T-22 ไม่มี AC ตรง ๆ)
+
+---
+
+## 2569-09-23 คำสั่ง: /implement T-21
+
+- เครื่องมือ: Claude Code (VS Code ใน Codespaces)
+- task: T-21 ต่อหน้าเลือกช่วงเวลากับ GET /slots จริง พร้อมข้อมูลตัวอย่าง (รองรับ FR-BKG-01, FR-BKG-06, IF-IDP-01)
+- ไฟล์ที่สร้างหรือแก้ (ตรงกับช่อง "ไฟล์ที่แตะ"):
+  - สร้าง `backend/app/db/seed.py` (ข้อมูลช่วงเวลาตัวอย่าง 7 วัน แพ็กเกจ DEMO-A, DEMO-B ไม่ได้มาจาก spec) และ `backend/tests/test_T21_seed.py`
+  - แก้ `frontend/src/api/client.js` (getSlots โยน error เมื่อหลังบ้านตอบไม่สำเร็จ), `frontend/src/App.jsx` (ใช้ api จริงแทน client จำลอง), `frontend/src/pages/SlotPicker.jsx` (แสดงข้อความเมื่อโหลดไม่สำเร็จ), `frontend/src/__tests__/FR-BKG-06.test.jsx` (เพิ่ม test กรณีหลังบ้านไม่ตอบ), `.gitignore` (กัน dev.db)
+- ผล test:
+  - หลังบ้าน `cd backend && pytest -v`: 19 passed (ของ T-21: test_T21_seed_makes_slots_visible, test_T21_seed_twice_does_not_duplicate)
+  - หน้าจอ `cd frontend && npx vitest run`: 4 passed (ของ T-21: "T-21 หลังบ้านไม่ตอบ แสดงข้อความโหลดไม่สำเร็จ")
+- ลองเชื่อมครบวงจรจริง (AI รันเอง):
+  - `DATABASE_URL=sqlite:///./dev.db python -m app.db.seed` -> ใส่ข้อมูลช่วงเวลาตัวอย่าง 35 รายการ
+  - เปิด uvicorn (`AUTH_MODE=dev`) และ Vite แล้วเรียก `/api/slots?date_from=2026-09-23&package_code=DEMO-A` ผ่าน Vite -> HTTP 200 ได้ช่วงเวลาจาก dev.db และ log ของ uvicorn มี `"GET /slots?... HTTP/1.1" 200 OK`
+  - ปิด uvicorn แล้วเรียกซ้ำ -> HTTP 500 และ Vite log ขึ้น `ECONNREFUSED` (หน้าจอจะแสดงข้อความ "โหลดช่วงเวลาไม่สำเร็จ")
+  - ยังไม่ได้เปิดหน้าจอในเบราว์เซอร์ ทีมต้องเปิดดูเอง
+- สิ่งที่เกือบต้องเดาแต่ไม่ได้เดา: รายการแพ็กเกจยังไม่มี API (ข้อสังเกต 7) จึงใส่รหัสแพ็กเกจตัวอย่างใน App.jsx ให้ตรงกับ seed.py และไม่ได้สร้าง API รายการแพ็กเกจเพิ่ม

@@ -20,13 +20,21 @@ function groupByDate(slots) {
 export default function SlotPicker({ client, packages, onSelectSlot }) {
   const [packageCode, setPackageCode] = useState(packages[0])
   const [slots, setSlots] = useState(null)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     let stale = false
     setSlots(null)
-    client.getSlots({ dateFrom: todayInBangkok(), packageCode }).then((data) => {
-      if (!stale) setSlots(data)
-    })
+    setError(false)
+    client
+      .getSlots({ dateFrom: todayInBangkok(), packageCode })
+      .then((data) => {
+        if (!stale) setSlots(data)
+      })
+      // T-21: เรียกหลังบ้านไม่สำเร็จ แสดงข้อความแทนการค้างที่ "กำลังโหลด"
+      .catch(() => {
+        if (!stale) setError(true)
+      })
     return () => {
       stale = true
     }
@@ -49,7 +57,11 @@ export default function SlotPicker({ client, packages, onSelectSlot }) {
         </select>
       </label>
 
-      {slots === null ? (
+      {error ? (
+        <p role="alert" className="rounded-md bg-red-50 p-3 text-red-700">
+          โหลดช่วงเวลาไม่สำเร็จ กรุณาลองใหม่อีกครั้ง
+        </p>
+      ) : slots === null ? (
         <p className="text-slate-500">กำลังโหลดช่วงเวลา...</p>
       ) : (
         groupByDate(slots).map(([date, daySlots]) => (

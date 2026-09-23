@@ -186,7 +186,7 @@ Feature: จองคิวตรวจสุขภาพ (Booking) | Spec ID: S
 - ไฟล์ที่แตะ: `frontend/src/api/client.js`, `frontend/src/App.jsx`, `frontend/src/pages/SlotPicker.jsx`, `frontend/src/__tests__/FR-BKG-06.test.jsx`, `backend/app/db/seed.py`, `backend/tests/test_T21_seed.py`, `.gitignore`
 - ต้องทำหลัง: T-04, T-17
 - เสร็จเมื่อ: ใส่ข้อมูลตัวอย่างแล้วเปิด `uvicorn` กับ `npm run dev` หน้าจอแสดงช่วงเวลาจากฐานข้อมูล และ terminal หลังบ้านขึ้น `GET /slots ... 200` เมื่อปิดหลังบ้านแล้วกด refresh หน้าจอต้องแสดงข้อความ error
-- สถานะ: พร้อมทำ
+- สถานะ: เสร็จ รอทีมตรวจ
 
 ### T-22 ต่อหน้ายืนยันและหน้าผลการจองกับ POST /bookings จริง
 - รองรับ: FR-BKG-02, FR-BKG-03, FR-BKG-04, FR-BKG-05

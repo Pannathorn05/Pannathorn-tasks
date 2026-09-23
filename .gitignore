@@ -2,3 +2,5 @@
 node_modules/
 __pycache__/
 .venv/
+# ฐานข้อมูล SQLite สำหรับทดลองเปิดระบบ (T-21)
+dev.db

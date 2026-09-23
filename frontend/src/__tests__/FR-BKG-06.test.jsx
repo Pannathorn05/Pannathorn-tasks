@@ -31,6 +31,15 @@ test('FR-BKG-01 แสดงช่วงเวลาพร้อมที่น�
   expect(client.getSlots).toHaveBeenCalledWith(expect.objectContaining({ packageCode: 'PKG-TEST-1' }))
 })
 
+// T-21 / FR-BKG-01: หลังบ้านตอบไม่สำเร็จ หน้าจอแสดงข้อความ error ไม่แสดงช่วงเวลา
+test('T-21 หลังบ้านไม่ตอบ แสดงข้อความโหลดไม่สำเร็จ', async () => {
+  const client = { getSlots: vi.fn(async () => { throw new Error('GET /slots ตอบ 502') }) }
+  render(<SlotPicker client={client} packages={['PKG-TEST-1']} />)
+
+  expect((await screen.findByRole('alert')).textContent).toContain('โหลดช่วงเวลาไม่สำเร็จ')
+  expect(screen.queryByText('กำลังโหลดช่วงเวลา...')).toBeNull()
+})
+
 // FR-BKG-06: เปลี่ยนแพ็กเกจแล้วเรียก getSlots ใหม่ด้วย package_code ใหม่
 test('FR-BKG-06 เปลี่ยนแพ็กเกจแล้วโหลดช่วงเวลาใหม่', async () => {
   const client = mockClient()

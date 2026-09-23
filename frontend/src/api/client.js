@@ -4,9 +4,11 @@
 const BASE = import.meta.env.VITE_API_BASE ?? '/api'
 
 export const api = {
+  // FR-BKG-01, FR-BKG-06: GET /slots ถ้าหลังบ้านตอบไม่สำเร็จให้โยน error ให้หน้าจอแสดง (T-21)
   async getSlots({ dateFrom, packageCode }) {
     const q = new URLSearchParams({ date_from: dateFrom, package_code: packageCode })
     const res = await fetch(`${BASE}/slots?${q}`)
+    if (!res.ok) throw new Error(`GET /slots ตอบ ${res.status}`)
     return res.json()
   },
   async createBooking({ slotId }) {
