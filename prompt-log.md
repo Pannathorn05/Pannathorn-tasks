@@ -151,3 +151,15 @@ Test Files 2 passed (2) | Tests 3 passed (3)
 - สิ่งที่เกือบต้องเดาแต่ไม่ได้เดา:
   - ค่าของ `status` ใน bookings (เช่น "ยังไม่ได้ใช้" ตาม FR-BKG-02) spec ไม่ได้กำหนด จึงสร้างเป็นคอลัมน์ข้อความเปล่า ๆ ไม่มีค่าเริ่มต้น ให้ T-05 และ T-06 ตัดสินใจ
   - ความยาวของข้อความ และ index เพื่อความเร็ว plan ไม่ได้ระบุ จึงไม่ได้กำหนด (ตอนแรกใส่ index ไว้ แล้วเอาออกเพราะไม่มีใน plan)
+
+---
+
+## 2569-09-23 คำสั่ง: /implement T-03
+
+- เครื่องมือ: Claude Code (VS Code ใน Codespaces)
+- task: T-03 ตรวจผลยืนยันตัวตนก่อนเข้าถึงทุก endpoint (รองรับ IF-IDP-01)
+- ไฟล์ที่สร้างหรือแก้ (ตรงกับช่อง "ไฟล์ที่แตะ"): สร้าง `backend/app/auth/idp.py`, `backend/tests/test_IF_IDP_01.py` แก้ `backend/tests/conftest.py` (เพิ่ม fixture `client` ที่ยืนยันตัวตนแล้วด้วยตัวตรวจจำลอง)
+- ผล test (`cd backend && pytest -v`): 13 passed (ของ T-03 4 ตัว: test_IF_IDP_01_rejects_request_without_identity, test_IF_IDP_01_accepts_request_with_identity, test_IF_IDP_01_default_rejects_all, test_IF_IDP_01_dev_mode_accepts_dev_user) มี warning 1 ตัวจาก library (StarletteDeprecationWarning เรื่อง httpx) ไม่ได้มาจากโค้ดของเรา
+- ตามคำตอบข้อ 2 ของทีม: ค่าเริ่มต้นปฏิเสธทุก request (ยังไม่มีการเชื่อมระบบยืนยันตัวตนจริง) และมีตัวตรวจจำลองเปิดด้วย `AUTH_MODE=dev` ที่ถือว่าเป็นผู้ใช้ `dev-user`
+- สิ่งที่เกือบต้องเดาแต่ไม่ได้เดา: รูปแบบที่หน้าจอส่งผลยืนยันตัวตน (header, token) ไม่มีใน spec/plan จึงไม่ได้สร้าง ตัวตรวจจริงยังรอข้อสังเกต 5
+- สถานะ: T-02 เปลี่ยนเป็น "เสร็จ" (ทีมอนุมัติให้ถือว่าเสร็จหลัง commit ตามคำตอบข้อ 4) T-03 เป็น "เสร็จ รอทีมตรวจ"

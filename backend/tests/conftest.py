@@ -1,10 +1,12 @@
 from collections.abc import Iterator
 
 import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from app.auth.idp import Identity, get_verifier
 from app.db.session import get_session
 from app.main import app
 
@@ -38,3 +40,14 @@ def db_session(engine: Engine) -> Iterator[Session]:
     with SessionLocal() as session:
         yield session
     app.dependency_overrides.pop(get_session, None)
+
+
+TEST_ACTOR_ID = "test-actor"
+
+
+# IF-IDP-01: client ของ app จริงที่ผ่านการยืนยันตัวตนแล้ว (ตัวตรวจจำลอง) และใช้ฐานข้อมูล SQLite ของ test
+@pytest.fixture
+def client(db_session: Session) -> Iterator[TestClient]:
+    app.dependency_overrides[get_verifier] = lambda: lambda request: Identity(actor_id=TEST_ACTOR_ID)
+    yield TestClient(app)
+    app.dependency_overrides.pop(get_verifier, None)
