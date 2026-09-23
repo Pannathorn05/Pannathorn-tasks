@@ -24,7 +24,7 @@ Feature: จองคิวตรวจสุขภาพ (Booking) | Spec ID: S
 - ไฟล์ที่แตะ: `backend/app/db/models.py`, `backend/app/db/migrations/001_init.py`, `backend/tests/test_IF_HIS_01_schema.py`
 - ต้องทำหลัง: T-01
 - เสร็จเมื่อ: test ยืนยันว่า `upgrade(engine)` สร้างครบ 3 ตารางตาม plan ข้อ 3 และตาราง bookings ไม่มีคอลัมน์เลขบัตรประชาชน (`queue_no` ว่างได้)
-- สถานะ: พร้อมทำ
+- สถานะ: เสร็จ รอทีมตรวจ
 
 ### T-03 ตรวจผลยืนยันตัวตนก่อนเข้าถึงทุก endpoint
 - รองรับ: IF-IDP-01

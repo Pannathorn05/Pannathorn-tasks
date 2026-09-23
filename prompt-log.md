@@ -139,3 +139,15 @@ Test Files 2 passed (2) | Tests 3 passed (3)
 ### สิ่งที่แก้ใน tasks.md
 
 - สถานะ T-01 และ T-17: "เสร็จ รอทีมตรวจ" -> "เสร็จ"
+
+---
+
+## 2569-09-23 คำสั่ง: /implement T-02
+
+- เครื่องมือ: Claude Code (VS Code ใน Codespaces)
+- task: T-02 สร้างตาราง slots, bookings, audit_logs และ migration 001_init (รองรับ CON-TECH-01, DOM-PDPA-01, IF-HIS-01, FR-BKG-04)
+- ไฟล์ที่สร้าง (ตรงกับช่อง "ไฟล์ที่แตะ"): `backend/app/db/models.py`, `backend/app/db/migrations/001_init.py`, `backend/tests/test_IF_HIS_01_schema.py`
+- ผล test (`cd backend && pytest -v`): 9 passed (ของ T-02 5 ตัว: test_T02_upgrade_creates_three_tables, test_IF_HIS_01_bookings_has_hn_and_no_national_id, test_T02_queue_no_is_nullable, test_DOM_PDPA_01_audit_logs_columns, test_T02_slots_columns)
+- สิ่งที่เกือบต้องเดาแต่ไม่ได้เดา:
+  - ค่าของ `status` ใน bookings (เช่น "ยังไม่ได้ใช้" ตาม FR-BKG-02) spec ไม่ได้กำหนด จึงสร้างเป็นคอลัมน์ข้อความเปล่า ๆ ไม่มีค่าเริ่มต้น ให้ T-05 และ T-06 ตัดสินใจ
+  - ความยาวของข้อความ และ index เพื่อความเร็ว plan ไม่ได้ระบุ จึงไม่ได้กำหนด (ตอนแรกใส่ index ไว้ แล้วเอาออกเพราะไม่มีใน plan)
