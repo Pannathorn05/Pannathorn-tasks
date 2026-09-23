@@ -16,7 +16,7 @@ Feature: จองคิวตรวจสุขภาพ (Booking) | Spec ID: S
 - ไฟล์ที่แตะ: `backend/app/main.py`, `backend/app/config.py`, `backend/app/db/session.py`, `backend/tests/conftest.py`, `backend/tests/test_T01_setup.py`
 - ต้องทำหลัง: ไม่มี
 - เสร็จเมื่อ: `cd backend && pytest` รันได้โดย conftest สร้าง session SQLite ในหน่วยความจำ และ app อ่าน `DATABASE_URL` จาก config ได้
-- สถานะ: เสร็จ รอทีมตรวจ
+- สถานะ: เสร็จ
 
 ### T-02 สร้างตาราง slots, bookings, audit_logs และ migration 001_init
 - รองรับ: CON-TECH-01, DOM-PDPA-01, IF-HIS-01, FR-BKG-04
@@ -154,7 +154,7 @@ Feature: จองคิวตรวจสุขภาพ (Booking) | Spec ID: S
 - ไฟล์ที่แตะ: `frontend/src/pages/SlotPicker.jsx`, `frontend/src/App.jsx`, `frontend/src/__tests__/FR-BKG-06.test.jsx`
 - ต้องทำหลัง: ไม่มี
 - เสร็จเมื่อ: test ที่ใช้ client จำลองยืนยันว่าหน้าจอแสดงช่วงเวลาพร้อมที่นั่งคงเหลือ และเรียก `getSlots` ใหม่ด้วย `package_code` ใหม่เมื่อเปลี่ยนแพ็กเกจ (รับรายการแพ็กเกจเป็น props ไปก่อน ดูข้อสังเกต 7)
-- สถานะ: เสร็จ รอทีมตรวจ
+- สถานะ: เสร็จ
 
 ### T-18 สร้างหน้ายืนยันและแจ้ง "ช่วงเวลาเต็ม" พร้อม 3 ตัวเลือก (ConfirmBooking)
 - รองรับ: FR-BKG-03, FR-BKG-04
