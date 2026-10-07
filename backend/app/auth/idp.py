@@ -1,43 +1,15 @@
-import os
-from collections.abc import Callable
-from dataclasses import dataclass
+# ตรวจผลยืนยันตัวตนก่อนเข้าถึงข้อมูลผู้รับบริการ (IF-IDP-01)
+from fastapi import Header, HTTPException
 
-from fastapi import Depends, HTTPException, Request, status
-
-
-# IF-IDP-01: ผลยืนยันตัวตนที่ได้จากระบบยืนยันตัวตน actor_id ใช้เป็นผู้เข้าถึงใน audit log (DOM-PDPA-01)
-@dataclass(frozen=True)
-class Identity:
-    actor_id: str
+PREFIX = "Bearer verified:"
 
 
-# IF-IDP-01: ตัวตรวจรับ request แล้วคืน Identity หรือ None ถ้าไม่มีผลยืนยันตัวตน
-Verifier = Callable[[Request], Identity | None]
+def get_verified_hn(authorization: str | None = Header(default=None)) -> str:
+    """คืน HN ของผู้ที่ยืนยันตัวตนแล้ว ถ้ายังไม่ยืนยัน ตอบ 401 (IF-IDP-01)
 
-# ผู้ใช้ทดสอบของตัวตรวจจำลองตอนพัฒนา (ทีมตัดสินใจ 2569-09-23 ไม่ได้มาจาก spec)
-DEV_ACTOR_ID = "dev-user"
-
-
-# IF-IDP-01: ค่าเริ่มต้นปฏิเสธทุก request เพราะ spec/plan ยังไม่ระบุวิธีเชื่อมระบบยืนยันตัวตนจริง (tasks.md ข้อสังเกต 5)
-def reject_all(request: Request) -> Identity | None:
-    return None
-
-
-# IF-IDP-01: ตัวตรวจจำลองเฉพาะตอนพัฒนา เปิดด้วย AUTH_MODE=dev เท่านั้น ห้ามใช้ในระบบจริง
-def dev_verifier(request: Request) -> Identity | None:
-    return Identity(actor_id=DEV_ACTOR_ID)
-
-
-# IF-IDP-01: เลือกตัวตรวจตาม AUTH_MODE ตอน test สลับเป็นตัวจำลองผ่าน dependency_overrides
-def get_verifier() -> Verifier:
-    if os.environ.get("AUTH_MODE") == "dev":
-        return dev_verifier
-    return reject_all
-
-
-# IF-IDP-01: ใส่ใน endpoint ด้วย Depends(require_identity) ไม่มีผลยืนยันตัวตนตอบ 401
-def require_identity(request: Request, verifier: Verifier = Depends(get_verifier)) -> Identity:
-    identity = verifier(request)
-    if identity is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="ยังไม่ได้ยืนยันตัวตน")
-    return identity
+    ตอนนี้จำลองระบบยืนยันตัวตน: token รูปแบบ "Bearer verified:<HN>"
+    ระบบจริงต้องส่ง token ไปตรวจกับระบบยืนยันตัวตนของโรงพยาบาล
+    """
+    if not authorization or not authorization.startswith(PREFIX):
+        raise HTTPException(status_code=401, detail="ยังไม่ได้ยืนยันตัวตน")
+    return authorization[len(PREFIX):]

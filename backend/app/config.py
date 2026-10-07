@@ -1,9 +1,7 @@
+# อ่านค่าตั้งระบบจากตัวแปรสภาพแวดล้อม (CON-TECH-01)
 import os
 
-
-# CON-TECH-01: ระบบจริงชี้ DATABASE_URL ไป PostgreSQL ตอน test ใช้ SQLite ได้โดยไม่แก้โค้ด (plan ข้อ 2)
-def get_database_url() -> str:
-    url = os.environ.get("DATABASE_URL")
-    if not url:
-        raise RuntimeError("ยังไม่ได้ตั้งค่าตัวแปร DATABASE_URL")
-    return url
+# ระบบจริงตั้ง DATABASE_URL เป็น PostgreSQL ตาม CON-TECH-01
+# เช่น postgresql+psycopg://user:pass@db:5432/checkup
+# ค่าเริ่มต้นเป็น SQLite ไว้ลองรันใน Codespace เท่านั้น
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./dev.db")

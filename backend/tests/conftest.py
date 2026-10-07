@@ -1,53 +1,52 @@
-from collections.abc import Iterator
+# เตรียมฐานข้อมูล SQLite ในหน่วยความจำให้ทุก test (ไม่ต้องมี PostgreSQL จริง)
+from datetime import date, time, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import Engine, create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app.auth.idp import Identity, get_verifier
-from app.db.session import get_session
+from app.db.models import Base, Slot
+from app.db.session import get_db
 from app.main import app
 
-# test ใช้ SQLite ในหน่วยความจำแทน PostgreSQL เพราะ Codespace ไม่มีเครื่องฐานข้อมูล (plan ข้อ 2)
-TEST_DATABASE_URL = "sqlite:///:memory:"
+# ผู้รับบริการที่ยืนยันตัวตนแล้ว HN 0001234
+AUTH = {"Authorization": "Bearer verified:0001234"}
 
 
-# CON-TECH-01: engine SQLite ในหน่วยความจำ แทน PostgreSQL ตอน test (plan ข้อ 2)
 @pytest.fixture
-def engine() -> Iterator[Engine]:
-    # StaticPool ให้ทุก connection ใช้ฐานข้อมูลในหน่วยความจำก้อนเดียวกัน
-    eng = create_engine(
-        TEST_DATABASE_URL,
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
+def db():
+    engine = create_engine(
+        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
     )
-    yield eng
-    eng.dispose()
+    Base.metadata.create_all(engine)
+    session = sessionmaker(bind=engine, autoflush=False)()
+    yield session
+    session.close()
 
 
-# CON-TECH-01: สลับ get_session ของ app ให้ใช้ SQLite ตอน test โดยไม่แก้โค้ดใน app
 @pytest.fixture
-def db_session(engine: Engine) -> Iterator[Session]:
-    SessionLocal = sessionmaker(bind=engine)
-
-    def override_get_session() -> Iterator[Session]:
-        with SessionLocal() as session:
-            yield session
-
-    app.dependency_overrides[get_session] = override_get_session
-    with SessionLocal() as session:
-        yield session
-    app.dependency_overrides.pop(get_session, None)
-
-
-TEST_ACTOR_ID = "test-actor"
-
-
-# IF-IDP-01: client ของ app จริงที่ผ่านการยืนยันตัวตนแล้ว (ตัวตรวจจำลอง) และใช้ฐานข้อมูล SQLite ของ test
-@pytest.fixture
-def client(db_session: Session) -> Iterator[TestClient]:
-    app.dependency_overrides[get_verifier] = lambda: lambda request: Identity(actor_id=TEST_ACTOR_ID)
+def client(db):
+    app.dependency_overrides[get_db] = lambda: db
     yield TestClient(app)
-    app.dependency_overrides.pop(get_verifier, None)
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def make_slot(db):
+    """สร้างช่วงเวลา 1 ช่วง ค่าเริ่มต้นคือพรุ่งนี้ 09.00 น. แพ็กเกจ BASIC"""
+    def _make(start="09:00", remaining=1, capacity=None, days_from_today=1, package_code="BASIC"):
+        h, m = map(int, start.split(":"))
+        slot = Slot(
+            slot_date=date.today() + timedelta(days=days_from_today),
+            start_time=time(h, m),
+            package_code=package_code,
+            capacity=capacity if capacity is not None else max(remaining, 1),
+            remaining=remaining,
+        )
+        db.add(slot)
+        db.commit()
+        db.refresh(slot)
+        return slot
+    return _make
