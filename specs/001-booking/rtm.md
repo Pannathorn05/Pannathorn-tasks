@@ -1,17 +1,17 @@
 # RTM: จองคิวตรวจสุขภาพ (Booking)
-อ้างอิง: spec.md SPEC-BKG-001 Draft v2 | tasks.md (เสร็จ T-01 ถึง T-03) | test-cases.md (AC-BKG-01 6 แถว)
-สร้างด้วย /verify เมื่อ 2569-10-07 09.06 | test: 8 ผ่าน 1 ไม่ผ่าน
-(หลังบ้าน pytest 7 ผ่าน 0 ไม่ผ่าน / หน้าจอ vitest 1 ผ่าน 1 ไม่ผ่าน: TC-BKG-01-2.test.jsx หาไฟล์ pages/ConfirmBooking.jsx ไม่เจอ เพราะ T-11 ยังไม่ได้ทำ และ T-06 รอ Q-02)
+อ้างอิง: spec.md SPEC-BKG-001 Draft v2 (หัวไฟล์ยังเขียน v2 แต่หมวด "หน้าจอ (UI)" เขียนว่าเพิ่มใน v3) | tasks.md (เสร็จ T-01 ถึง T-03, เสร็จ รอทีมตรวจ T-10 T-11) | test-cases.md (AC-BKG-01 6 แถว) | mockups/UI-BKG-01, UI-BKG-02
+สร้างด้วย /verify เมื่อ 2569-10-07 09.06 แก้รอบที่ 2 เมื่อ 2569-10-07 09.35 | test: 10 ผ่าน 1 ไม่ผ่าน
+(หลังบ้าน pytest 7 ผ่าน 0 ไม่ผ่าน / หน้าจอ vitest 3 ผ่าน 1 ไม่ผ่าน: AC-BKG-03.test.jsx ไม่ผ่าน "expected 'เต็มแล้วช่วง 09:00 น. ...' to contain 'ช่วงเวลาเต็ม'" ไฟล์ test นี้มีการแก้ใน working tree ที่ยังไม่ commit ทำให้ assert เข้มขึ้น: จาก "เต็ม" เป็น "ช่วงเวลาเต็ม" และจาก "มากกว่า 0 ตัวเลือก" เป็น "3 ตัวเลือก")
 
 ## 1. ตามรอยไปข้างหน้า (requirement ไป โค้ด ไป test)
 | ID | AC | task | โค้ด (ไฟล์: ฟังก์ชัน) | test (ผล) | สถานะ |
 |---|---|---|---|---|---|
-| FR-BKG-01 | AC-BKG-05 (ตรวจแค่ความเร็ว) | T-02 เสร็จ, T-10 พร้อมทำ, T-12 พร้อมทำ | slots/router.py: get_slots, slots/service.py: list_available_slots | test_AC_BKG_05 (ผ่าน) ตรวจแค่ status 200 และเวลา | ช่องโหว่ (F-03, F-06) |
+| FR-BKG-01 | AC-BKG-05 (ตรวจแค่ความเร็ว) | T-02 เสร็จ, T-10 เสร็จ รอทีมตรวจ, T-12 พร้อมทำ | slots/router.py: get_slots, slots/service.py: list_available_slots, frontend pages/SlotPicker.jsx | test_AC_BKG_05 (ผ่าน) ตรวจแค่ status 200 และเวลา | ช่องโหว่ (F-03, F-06, F-17, F-18) |
 | FR-BKG-02 | AC-BKG-02 | T-04 พร้อมทำ | ยังไม่มี | ยังไม่มี | ยังไม่ถึง |
-| FR-BKG-03 | AC-BKG-03 | T-05, T-11, T-12 พร้อมทำ | booking/router.py: create_booking ตอบ 409 "ช่วงเวลาเต็ม" แล้ว แต่ยังไม่เสนอ 3 ช่วง | test_TC_BKG_01_3_no_seat_left (ผ่าน) ตรวจแค่ส่วน "ไม่สร้างรายการจอง" | ยังไม่ถึง |
-| FR-BKG-04 | AC-BKG-01 | T-03 เสร็จ, T-06 รอ Q-02, T-07 พร้อมทำ (ส่วนส่งข้อความ) | booking/router.py: create_booking, booking/service.py: create_booking, next_queue_no | test_AC_BKG_01 (ผ่าน), test_TC_BKG_01_1_book_last_seat (ผ่าน), test_TC_BKG_01_3_no_seat_left (ผ่าน), test_TC_BKG_01_4_not_authenticated (ผ่าน), TC-BKG-01-2.test.jsx (ไม่ผ่าน: ยังไม่ได้สร้างหน้าจอ) | ช่องโหว่ (F-04, F-05, F-09, F-10) |
+| FR-BKG-03 | AC-BKG-03 | T-05 พร้อมทำ, T-11 เสร็จ รอทีมตรวจ, T-12 พร้อมทำ | booking/router.py: create_booking ตอบ 409 แต่ยังไม่ส่งช่วงใกล้เคียง (T-05), frontend pages/ConfirmBooking.jsx แสดงกล่องเต็ม | AC-BKG-03.test.jsx (ไม่ผ่าน), test_TC_BKG_01_3_no_seat_left (ผ่าน) ตรวจแค่ส่วน "ไม่สร้างรายการจอง" | ช่องโหว่ (F-14, F-15) |
+| FR-BKG-04 | AC-BKG-01 | T-03 เสร็จ, T-06 รอ Q-02, T-07 พร้อมทำ (ส่วนส่งข้อความ), T-11 เสร็จ รอทีมตรวจ | booking/router.py: create_booking, booking/service.py: create_booking, next_queue_no, frontend pages/ConfirmBooking.jsx: confirm, App.jsx | test_AC_BKG_01 (ผ่าน), test_TC_BKG_01_1_book_last_seat (ผ่าน), test_TC_BKG_01_3_no_seat_left (ผ่าน), test_TC_BKG_01_4_not_authenticated (ผ่าน), TC-BKG-01-2.test.jsx (ผ่าน) | ช่องโหว่ (F-04, F-05, F-09, F-10, F-13, F-16) |
 | FR-BKG-05 | AC-BKG-04 | T-07 พร้อมทำ | ยังไม่มี (GET /bookings/{id} ใน plan ข้อ 4 ยังไม่มีโค้ด และไม่มี task ใดสร้าง) | ยังไม่มี | ยังไม่ถึง |
-| FR-BKG-06 | ไม่มี AC | T-02 เสร็จ, T-10 พร้อมทำ | slots/service.py: list_available_slots (กรองตาม package_code) | ไม่มี test ที่ตรวจการเปลี่ยนแพ็กเกจ | ช่องโหว่ (F-07) |
+| FR-BKG-06 | ไม่มี AC | T-02 เสร็จ, T-10 เสร็จ รอทีมตรวจ | slots/service.py: list_available_slots (กรองตาม package_code), frontend pages/SlotPicker.jsx: useEffect โหลดใหม่เมื่อเปลี่ยนแพ็กเกจ | SlotPicker.test.jsx (ผ่าน) ตรวจว่าช่วงของแพ็กเกจใหม่ขึ้นมา แต่ไม่ได้ตรวจว่าช่วงของแพ็กเกจเดิมหายไป | ช่องโหว่ (F-07, F-19) |
 | NFR-PERF-01 | AC-BKG-05 | T-02 เสร็จ | slots/service.py: list_available_slots | test_AC_BKG_05 (ผ่าน) แบบย่อส่วน | ช่องโหว่ (F-08) |
 | NFR-SEC-01 | ไม่มี AC | ไม่มี task | ไม่มี (TLS เป็นเรื่องการติดตั้งเครื่อง) | ไม่มี | ช่องโหว่ (F-11) |
 | NFR-REL-02 | AC-BKG-04 | T-07 พร้อมทำ | ยังไม่มี | ยังไม่มี | ยังไม่ถึง |
@@ -39,10 +39,17 @@
 | config.py: DATABASE_URL, db/session.py | CON-TECH-01 | ตรง | ค่าเริ่มต้นเป็น SQLite (dev.db) ไว้รันใน Codespace ตาม plan ข้อ 2 ระบบจริงต้องตั้ง DATABASE_URL เป็น PostgreSQL |
 | main.py: lifespan, app | ไม่อ้าง (T-02, T-03) | ตรง | สร้างตารางตอนเปิดหลังบ้าน และรวม router |
 | frontend/src/api/client.js: getSlots, createBooking | plan ข้อ 4 | ตรงกับสัญญา API | ข้อสังเกต: createBooking ไม่ได้ส่ง Authorization ถ้าต่อกับหลังบ้านจริงจะได้ 401 เรื่องนี้เป็นของ T-12 ที่ยังไม่ได้ทำ จึงยังไม่นับเป็นข้อค้นพบ |
-| frontend/src/App.jsx, main.jsx | ไม่อ้าง | ไม่มีเรื่องของ spec | โครงเริ่มต้นของรายวิชา ยังไม่มีหน้าจอของ task ใด |
+| frontend/src/api/client.js: cancelBooking | ไม่อ้าง (คอมเมนต์ "เพิ่มตอนทำ T-11") | ไม่ตรง | เรียก DELETE /bookings/{id} ซึ่งคือการยกเลิกคิว (UC-02) อยู่ใน Out of scope ไม่มีใน plan ข้อ 4 และไม่อยู่ในช่อง "ไฟล์ที่แตะ" ของ T-11 (F-13) |
+| frontend/src/App.jsx: App | T-10, T-11 | ไม่ตรง | ตอนกด "ถัดไป" ส่ง slot_date เป็นวันนี้ และ start_time เป็น '09:00' เสมอ ไม่ว่าเลือกช่วงไหน หน้ายืนยันจึงแสดงวันเวลาผิด (F-16) |
+| frontend/src/pages/SlotPicker.jsx (UI-BKG-01) | FR-BKG-01, FR-BKG-06 | บางส่วน | ช่องเลือกแพ็กเกจอยู่บนสุดและมีแถบขั้นตอน 3 ขั้น ตรงกับ "ต้องตรง" แต่เขียน "ว่าง N" ไม่ใช่ "เหลือ N ที่" (F-17) ไม่มีการเลือกวัน และไม่แสดงวันที่ของแต่ละช่วง (F-18) รายการแพ็กเกจฝังในโค้ด (F-19) ข้อสังเกต: ใช้ s.id แต่ GET /slots ตอบ slot_id ถ้าต่อ API จริงจะเลือกช่วงไม่ได้ เรื่องนี้เป็นของ T-12 จึงยังไม่นับ |
+| frontend/src/pages/ConfirmBooking.jsx: confirm (UI-BKG-02 สถานะปกติ) | FR-BKG-03, FR-BKG-04 | ตรง | ปุ่ม "ยืนยันการจอง" ตรงกับ "ต้องตรง" ปุ่ม "กลับไปเลือกเวลา" เป็นปุ่มนำทาง ไม่ต้องมี FR หน้าผลการจองแสดง queue_no ตามที่ API ตอบ ไม่ได้เดารูปแบบ |
+| frontend/src/pages/ConfirmBooking.jsx: กล่องช่วงเวลาเต็ม (UI-BKG-02 สถานะเต็ม) | FR-BKG-03 | ไม่ตรง | หัวข้อเขียน "เต็มแล้ว" ไม่ใช่ "ช่วงเวลาเต็ม" (F-14) และ slice(0, 2) แสดงแค่ 2 ตัวเลือก ไม่ใช่ 3 (F-15) |
+| frontend/src/pages/ConfirmBooking.jsx: cancel, ปุ่ม "ยกเลิกการจอง" | FR-BKG-04 | ไม่ตรง | ไม่มีใน mockup และไม่มีใน FR การยกเลิกคิวอยู่ใน Out of scope (UC-02) และ FR-BKG-04 พูดเรื่องยืนยันการจอง (F-13) |
+| frontend/src/main.jsx | ไม่อ้าง | ไม่มีเรื่องของ spec | จุดเริ่มของหน้าจอ |
+| mockups/UI-BKG-01-select-slot.html บรรทัด 69 | ไม่มี | mockup เกิน spec | ช่อง "แจ้งเตือนก่อนวันตรวจ 1 วัน" ไม่มี FR รองรับ โค้ดไม่ได้ทำ ซึ่งถูกแล้ว (F-20) |
 
 ## 3. ข้อค้นพบ
-ชนิด: AC ไม่มี test / test อ่อน / โค้ดไม่มี FR / FR ไม่มี AC / เดา Q-xx / ละเมิด Constraint / ตัวเลขไม่ตรง spec / อ้าง ID ผิดเรื่อง
+ชนิด: AC ไม่มี test / test อ่อน / โค้ดไม่มี FR / FR ไม่มี AC / เดา Q-xx / ละเมิด Constraint / ตัวเลขไม่ตรง spec / ตัวเลขฝังในโค้ด / อ้าง ID ผิดเรื่อง / ไม่ตรง mockup / ของแถม / mockup เกิน spec
 ทีมตัดสิน: แก้โค้ด / แก้ spec / เพิ่ม Q-xx / ไม่ใช่ปัญหา (พร้อมเหตุผล 1 บรรทัด)
 
 | F-ID | ชนิด | อยู่ที่ | ขัดกับ | รายละเอียด | ทีมตัดสิน |
@@ -59,6 +66,14 @@
 | F-10 | test อ่อน | backend/tests/test_AC_BKG_01.py บรรทัด 6-12 | AC-BKG-01 | test_AC_BKG_01 ใช้ชื่อ AC แต่ assert แค่ status 201 ไม่ได้ดูว่าบันทึกจริง มีหมายเลขคิว หรือที่นั่งเหลือ 0 ส่วนเหล่านี้ test_TC_BKG_01_1_book_last_seat ตรวจครบแล้ว จึงร้ายแรงน้อย แต่ชื่อ test ทำให้เข้าใจว่า AC-BKG-01 ถูกตรวจครบด้วย test ตัวนี้ | |
 | F-11 | FR ไม่มี AC | spec.md หมวด Quality Requirements | NFR-SEC-01 | ไม่มี AC และไม่มี task ที่ตรวจว่ารับส่งด้วย TLS 1.2 ขึ้นไป | |
 | F-12 | FR ไม่มี AC | spec.md หมวด Quality Requirements | NFR-USE-01 | ไม่มี AC และไม่มี task สำหรับทดสอบกับผู้ใช้ใหม่ 10 คน (ASM-05) ต้องเป็นการทดสอบโดยคน | |
+| F-13 | ของแถม | frontend/src/pages/ConfirmBooking.jsx บรรทัด 15-19, 27-31, frontend/src/api/client.js บรรทัด 20-24 | Out of scope (UC-02), UI-BKG-02, plan ข้อ 4 | หน้าผลการจองมีปุ่ม "ยกเลิกการจอง" ที่เรียก api.cancelBooking ไปยัง DELETE /bookings/{id} (F-04) ปุ่มนี้ไม่มีใน mockup UI-BKG-02 และไม่มี FR การยกเลิกคิวอยู่ใน Out of scope คอมเมนต์อ้าง FR-BKG-04 ซึ่งพูดเรื่องยืนยันการจอง (อ้าง ID ผิดเรื่อง) client.js เขียนว่า "เพิ่มตอนทำ T-11" แต่ client.js ไม่อยู่ในช่อง "ไฟล์ที่แตะ" ของ T-11 | |
+| F-14 | ไม่ตรง mockup | frontend/src/pages/ConfirmBooking.jsx บรรทัด 47 | AC-BKG-03, หมวด UI "ต้องตรง" ของ UI-BKG-02 | หัวข้อกล่องแจ้งเตือนเขียน "เต็มแล้ว" แต่ AC-BKG-03 และหมวด UI กำหนดข้อความ "ช่วงเวลาเต็ม" ทำให้ AC-BKG-03.test.jsx ไม่ผ่าน T-11 มีสถานะ "เสร็จ รอทีมตรวจ" แต่ test ที่ตรวจ T-11 ไม่ผ่าน | |
+| F-15 | ตัวเลขไม่ตรง spec | frontend/src/pages/ConfirmBooking.jsx บรรทัด 50 | FR-BKG-03, AC-BKG-03, หมวด UI "ต้องตรง" ของ UI-BKG-02 | (full.alternatives ?? []).slice(0, 2) แสดงแค่ 2 ตัวเลือก แต่ FR-BKG-03 สั่งให้เสนอ 3 ตัวเลือก ถ้าแก้ F-14 แล้ว AC-BKG-03.test.jsx จะยังไม่ผ่านที่ assert toBe(3) | |
+| F-16 | ไม่ตรง mockup | frontend/src/App.jsx บรรทัด 15 | UI-BKG-02 สถานะปกติ (การ์ดแสดงวันและเวลาที่เลือก), FR-BKG-04 | onNext ส่ง slot_date เป็นวันนี้ และ start_time เป็น '09:00' เสมอ ไม่ได้ใช้ข้อมูลของช่วงที่ผู้ใช้เลือก หน้ายืนยันจึงแสดงวันและเวลาผิด เช่น เลือก 13.00 น. ของพรุ่งนี้ แต่หน้ายืนยันขึ้นวันนี้ 09:00 น. ผู้ใช้จะกดยืนยันโดยเห็นข้อมูลผิด (การจองใช้ slot.id จึงจองถูกช่วง) "09:00" คือตัวอย่างใน Given ของ AC | |
+| F-17 | ไม่ตรง mockup | frontend/src/pages/SlotPicker.jsx บรรทัด 46 | หมวด UI "ต้องตรง" ของ UI-BKG-01 | แสดง "ว่าง {s.remaining}" แต่หมวด UI กำหนดว่าต้องมีคำว่า "เหลือ N ที่" | |
+| F-18 | ไม่ตรง mockup | frontend/src/pages/SlotPicker.jsx บรรทัด 38-50 | FR-BKG-01, UI-BKG-01 | FR-BKG-01 ให้แสดงช่วงเวลาว่าง "ของแต่ละวัน" ภายใน 30 วัน แต่หน้าจอไม่มีที่เลือกวัน และรายการแสดงแค่เวลา ไม่แสดงวันที่ ถ้า API ส่งช่วงของหลายวันมา ผู้ใช้จะเห็น "09:00 น." ซ้ำกันโดยแยกวันไม่ได้ หน้าตาของปุ่มเลือกวันยืดหยุ่นได้ตามหมวด UI แต่การเลือกวันหรือบอกวันที่เป็นสิ่งที่ FR ต้องการ | |
+| F-19 | ตัวเลขไม่ตรง spec | frontend/src/pages/SlotPicker.jsx บรรทัด 4-7 | spec ไม่ได้กำหนดรายการแพ็กเกจ, หมวด UI ("ข้อมูลตัวอย่างทั้งหมด" ยืดหยุ่นได้) | ฝังรายการแพ็กเกจ GEN "ตรวจสุขภาพทั่วไป" และ PRE "ตรวจสุขภาพก่อนเข้าทำงาน" ไว้ในโค้ด ชื่อเอามาจากข้อมูลตัวอย่างใน mockup และรหัส GEN, PRE ไม่มีที่มาใน spec หรือ plan (test หลังบ้านใช้ "BASIC") เป็นการตัดสินใจแทนทีมว่ามีแพ็กเกจอะไรบ้าง | |
+| F-20 | mockup เกิน spec | specs/001-booking/mockups/UI-BKG-01-select-slot.html บรรทัด 69 | ไม่มี FR รองรับ | mockup มีช่องติ๊ก "แจ้งเตือนก่อนวันตรวจ 1 วัน" แต่ไม่มี FR ข้อใดพูดถึงการแจ้งเตือนก่อนวันตรวจ (IF-NOT-01 พูดแค่ข้อความยืนยันการจอง) โค้ดไม่ได้ทำ ซึ่งถูกแล้ว ทีมควรถามผู้ใช้หรือ PO ว่าต้องการไหม ถ้าต้องการให้เพิ่ม FR หรือ Q-xx ก่อน ห้ามนับเป็นงานที่ขาด | |
 
 ## 4. แก้แล้ว
 | F-ID | แก้อย่างไร | รู้ได้อย่างไร |
